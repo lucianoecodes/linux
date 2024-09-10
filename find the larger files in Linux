@@ -1,0 +1,5 @@
+# 100MB or more
+find / -size +100M 
+
+# 1GB or more
+find / -size +1G
