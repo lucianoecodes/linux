@@ -1,0 +1,21 @@
+# List all LVM
+lsblk
+
+# Notify Linux about changes on disk SDA 
+echo 1 > /sys/block/sda/device/rescan
+
+# Check on lsblk the partition of root /, commonly sda2 or sda3 (partition number)
+# Growpart rewrite partition table
+growpart /dev/sda 3
+
+# Pvresize physically resize de partition
+pvresize /dev/sda3
+
+# Lvextend notify the logical partition there is more space
+lvextend -l +100%FREE /dev/mapper/ol-root
+
+# XFS notify the system the new size
+xfs_growfs /dev/mapper/ol-root
+
+# To check new disk size
+df -h
