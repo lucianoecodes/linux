@@ -33,7 +33,7 @@ for sync2 in $(cat /usr/local/projects/projects_names.txt); do
 
   cd /usr/local/projects/$PROJECT2
 
-  rsync -Pcuv -e ssh `find . -name "*.csv" -type f -mtime -4` root@10.10.10.22:/home/user1/$PROJECT2
+  rsync -Pcuv -e ssh \`find . -name "*.csv" -type f -mtime -4\` root@10.10.10.22:/home/user1/$PROJECT2
 
   sleep 2
 
