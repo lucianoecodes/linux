@@ -1,0 +1,75 @@
+# Status Page
+
+  #!/bin/bash
+
+  ttiposs=$(find /usr/local/bin/machinedata/data -mindepth 1 -maxdepth 1 -type d | cut -d '/' -f7-)
+
+  htmlPage="<!DOCTYPE html><html><head><title>"
+  htmlPage+="Project - Status Report"
+  htmlPage+="</title>"
+  htmlPage+="<link rel=\"shortcut icon\" href=\"*IMAGE*\" />"
+  htmlPage+="<meta http-equiv=\"refresh\" content=\"20\">"
+  htmlPage+="</head>"
+  htmlPage+="<style>"
+  htmlPage+=".row { display: flex; flex-wrap: wrap;}"
+  htmlPage+=".column { display: inline block;display: block;width: calc(33.333% - 0.5em);}"
+  htmlPage+=".column { display: inline block;display: block;width: calc(33.333% - 0.5em);}"
+  htmlPage+="</style>"
+  htmlPage+="<body>"
+  htmlPage+="<h2 style=\"text-align: center;\"><p class=\"pageTitle\">Status Report </p></h2>"
+  htmlPage+="<h3 style=\"text-align: center;\"><p class=\"pageTitle\">Last Refresh page $(date +"%Y-%m-%d %H:%M")</p></h3>"
+  htmlPage+="<h3 style=\"text-align: center;width: 100%;background: #33B2FF;\"><p>Process</p></h3>"
+
+  htmlPage+="<div class=\"row\">"
+  for line in $(find /home/user1/PROJECTS/ -mindepth 1 -maxdepth 1 -type d | cut -d '/' -f7- | sort); do
+        htmlPage+="<div class=\"column\">"
+        htmlPage+="<h1>Process: ${line^^} </h1><BR>"
+        for i in $(ps -ef | grep -E "[\/ ]$line([^\/]|$)" | grep -v "grep" | tr -s ' ' | cut -d ' ' -f 2 | sort); do
+                responseDT=$(ps -p $i -wo lstart)
+                htmlPage+="ID: $i _ DT: ${responseDT}"
+                htmlPage+="<BR>"
+        done
+        htmlPage+="</div>"
+  done
+  htmlPage+="</div>"
+
+  htmlPage+="<h3 style=\"text-align: center;width: 100%;background: #33B2FF;\"><p>Last Status</p></h3>"
+
+  htmlPage+="<div class=\"row\">"
+  for line2 in $(find /home/user1/PROJECTS/ -mindepth 1 -maxdepth 1 -type d | cut -d '/' -f7- | sort); do
+        ID=''
+        RESULT=''
+        htmlPage+="<div class=\"column\">"
+        htmlPage+="<h1> Last Status: ${line2^^} </h1><BR>"
+        for subline2 in $(find /home/user1/PROJECT/data/$line2 -mindepth 1 -maxdepth 1 -type d | cut -d '/' -f8- | sort); do
+                MENSAGE=$(cat /var/log/monitoring/${line2}_${subline2}.txt)
+                ID=$(echo "$MENSAGE" | cut -d ';' -f1)
+                RESULT=$(echo "$MENSAGE" | cut -d ';' -f2)
+                case $ID in
+                        1) htmlPage+="<b style=\"color:DimGray;\">&#11153; $RESULT</b>"
+                           htmlPage+="<BR>" ;;
+                        2) htmlPage+="<b style=\"color:DimGray;\">&#8634; $RESULT</b>"
+                           htmlPage+="<BR>" ;;
+                        3) htmlPage+="<b style=\"color:ForestGreen;\">&#128504; $RESULT</b>"
+                           htmlPage+="<BR>" ;;
+                        6) htmlPage+="<b style=\"color:Tomato;\">&#10539; $RESULT</b>"
+                           htmlPage+="<BR>" ;;
+                        7) htmlPage+="<b style=\"color:Tomato;\">&#10539; $RESULT</b>"
+                           htmlPage+="<BR>" ;;
+                        8) htmlPage+="<b style=\"color:Tomato;\">&#10539; $RESULT</b>"
+                           htmlPage+="<BR>" ;;
+                        *) htmlPage+="$RESULT"
+                           htmlPage+="<BR>" ;;
+                esac
+
+        done
+        htmlPage+="</div>"
+  done
+  htmlPage+="</div>"
+  done
+  htmlPage+="</div>"
+  done
+
+  htmlPage+="</div>"
+
+  echo $htmlPage >/var/www/html/index.html
